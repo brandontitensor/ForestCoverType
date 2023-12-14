@@ -105,8 +105,10 @@ head(data_test)
 
 my_recipe <- recipe(Cover_Type ~ ., data=my_data) %>%
   update_role(Id, new_role="id") %>% 
+  step_mutate(log_Horizontal_Distance_To_Fire_Points = log(Horizontal_Distance_To_Fire_Points)) %>% 
+  step_mutate(log_Horizontal_Distance_To_Roadways = log (Horizontal_Distance_To_Roadways)) %>% 
   step_other(all_nominal_predictors(), threshold = .01) %>% 
-  step_smote(all_outcomes(), neighbors=7)
+  step_naomit(all_nominal_predictors()) 
 
 prepped_recipe <- prep(my_recipe, verbose = T)
 bake_1 <- bake(prepped_recipe, new_data = NULL)
@@ -202,7 +204,7 @@ boost_predictions <- bind_cols(test_data$Id,boost_prediction$.pred_class)
 
 colnames(boost_predictions) <- c("Id","Cover_Type")
 
-vroom_write(boost_predictions,"boost_predictions.csv",',')
+vroom_write(boost_predictions,"boost_predictions2.csv",',')
 
 
 ###################
